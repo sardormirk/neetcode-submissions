@@ -1,0 +1,56 @@
+class Solution {
+public:
+    int carFleet(int target, vector<int>& position, vector<int>& speed) {
+
+        /*
+            keep track of count of fleets
+            eachh fleet is a time that a car can make, if a car cannot catch up to the nearest fleet
+            it becomes its own fleet
+
+
+            4 1 0 7   2 2 1 1
+
+            time[i] = (target - position[i]) / speed[i]
+
+                    
+        2   4.5      3     3
+            * *     *     *
+            0 1 2 3 4 5 6 7 8 9 10
+
+            starting from most ahead car -> calculate time
+            walk backwards and determine time for each car, checking if time <= next closest fleet
+            because cars cannot go ahead
+
+            sort cars position and speed in descending order -> will let us walk backward
+            store biggest fleet time so far
+            increase count if <= fleet time (merge in)
+            otherwise update fleet time
+        */
+
+        int n = position.size();
+        vector<pair<int, int>> pos_speed;
+        double max_fleet_time = 0;
+
+        int fleet_count = 0;
+
+        for (int i = 0; i < n; i++)
+        {
+            pos_speed.emplace_back(position[i], speed[i]);
+        }
+
+        sort(pos_speed.begin(), pos_speed.end(), greater<pair<int, int>>());
+
+        for (const auto &[pos, speed] : pos_speed)
+        {   
+            double time = (target - pos) / static_cast<double>(speed);
+
+            if (time > max_fleet_time)
+            {
+                max_fleet_time = time;
+                fleet_count++;
+            }
+        }
+
+        return fleet_count;
+    }
+};
